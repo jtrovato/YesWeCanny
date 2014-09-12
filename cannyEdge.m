@@ -26,7 +26,7 @@ Jy = conv2(Jy, S', 'same');
 J_mag = sqrt(Jx.^2 + Jy.^2);
 J_dir = atan2d(Jy, Jx);
 
-figure(); imagesc(J_mag); colormap(gray);
+
 % Non-maximum supression: thinning out the edges
 E = zeros(nr+2*pad, nc+2*pad);
 for i = 2: size(J_dir, 1)-1;
@@ -37,20 +37,20 @@ for i = 2: size(J_dir, 1)-1;
         end
         mag = J_mag(i,j);
             if (theta >= 0 && theta < 45) || (theta >= 180 && theta < 225)
-                sam1 = 0.5*(J_mag(i-1, j-1) + J_mag(i-1, j));
-                sam2 = 0.5*(J_mag(i+1, j) + J_mag(i+1, j+1));
-                E(i,j) = (mag > sam1 && mag > sam2);
-            elseif  (theta >= 45 && theta < 90) || (theta >= 225 && theta < 270)
-                sam1 = 0.5*(J_mag(i-1, j-1) + J_mag(i, j-1));
-                sam2 = 0.5*(J_mag(i, j+1) + J_mag(i+1, j+1));
-                E(i,j) = (mag > sam1 && mag > sam2);
-            elseif  (theta >= 90 && theta < 135) || (theta >= 270 && theta < 315)
                 sam1 = 0.5*(J_mag(i-1,j+1) + J_mag(i, j+1));
                 sam2 = 0.5*(J_mag(i, j-1) + J_mag(i+1, j-1));
                 E(i,j) = (mag > sam1 && mag > sam2);
-            elseif  (theta >= 135 && theta < 180) || (theta >= 315 && theta <= 360)
+            elseif  (theta >= 45 && theta < 90) || (theta >= 225 && theta < 270)
                 sam1 = 0.5*(J_mag(i-1,j) + J_mag(i-1, j+1));
                 sam2 = 0.5*(J_mag(i+1, j-1) + J_mag(i+1, j));
+                E(i,j) = (mag > sam1 && mag > sam2);
+            elseif  (theta >= 90 && theta < 135) || (theta >= 270 && theta < 315)
+                sam1 = 0.5*(J_mag(i-1, j-1) + J_mag(i-1, j));
+                sam2 = 0.5*(J_mag(i+1, j) + J_mag(i+1, j+1));
+                E(i,j) = (mag > sam1 && mag > sam2);
+            elseif  (theta >= 135 && theta < 180) || (theta >= 315 && theta <= 360)
+                sam1 = 0.5*(J_mag(i-1, j-1) + J_mag(i, j-1));
+                sam2 = 0.5*(J_mag(i, j+1) + J_mag(i+1, j+1));
                 E(i,j) = (mag > sam1 && mag > sam2);
             else
                 error('thats an invalid angle');
@@ -58,6 +58,7 @@ for i = 2: size(J_dir, 1)-1;
     end
 end
 
+% hysteresis: connecting the edges
  
 
 end

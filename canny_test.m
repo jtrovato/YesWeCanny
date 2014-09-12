@@ -14,9 +14,9 @@ I = rgb2gray(I);
 
 E = cannyEdge(I);
 
-figure();
-imagesc(E);
-colormap('gray');
-figure();
+figure(1);
 imagesc(I);
+colormap('gray');
+figure(2);
+imagesc(E);
 colormap('gray');
