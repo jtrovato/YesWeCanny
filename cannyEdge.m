@@ -11,8 +11,6 @@ Ip = padIm(I, pad);
 G = fspecial('gaussian', [3,3], 0.5);
 Is = conv2(Ip, G, 'same');
 
-
-
 % compute the gradient, magnitude, direction
 % could simply use [Jmag, Jdir] = imgradient(Is);
 dx = [1 -1];
@@ -26,7 +24,7 @@ Jx = conv2(Jx, S, 'same');
 Jy = conv2(Jy, S', 'same');
 
 J_mag = sqrt(Jx.^2 + Jy.^2);
-J_dir = atan2d(Jx, Jy);
+J_dir = atan2d(Jy, Jx);
 
 figure(); imagesc(J_mag); colormap(gray);
 % Non-maximum supression: thinning out the edges
