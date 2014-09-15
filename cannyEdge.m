@@ -8,7 +8,7 @@ pad = 2;
 Ip = padIm(I, pad);
 
 % smooth the image with Gaussian Blur
-G = fspecial('gaussian', [3,3], 0.5);
+G = fspecial('gaussian', [5,5], 0.5);
 Is = conv2(Ip, G, 'same');
 
 % compute the gradient, magnitude, direction
@@ -17,6 +17,13 @@ dx = [1 -1];
 dy = dx';
 Jx = conv2(Ip, dx, 'same');
 Jy = conv2(Ip, dy, 'same');
+figure();
+imagesc(Jx);
+colormap(gray);
+figure();
+imagesc(Jy);
+colormap(gray);
+
 
 %no idea why we convolve with S
 S = [1 1];
@@ -25,9 +32,12 @@ Jy = conv2(Jy, S', 'same');
 
 J_mag = sqrt(Jx.^2 + Jy.^2);
 J_dir = atan2d(Jy, Jx);
+E_dir = atan2d(-Jx, Jy);
 
 
 % Non-maximum supression: thinning out the edges
+% using an interpolation algorithm from wikipedia. It uses four points
+% instead of two closest to the gradient direction.
 E = zeros(nr+2*pad, nc+2*pad);
 for i = 2: size(J_dir, 1)-1;
     for j = 2:size(J_dir, 2)-1;
