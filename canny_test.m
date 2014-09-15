@@ -1,4 +1,5 @@
 % script to test cannyEdge()
+close all;
 
 I = [1 1 .5 1 0 .5 .5 1 0 1 0;
     0 1 .5 1 0 .5 .5 1 0 1 1;
