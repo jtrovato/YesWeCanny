@@ -15,18 +15,16 @@ Is = conv2(Ip, G, 'same');
 % could simply use [Jmag, Jdir] = imgradient(Is);
 dx = [1 -1];
 dy = dx';
-Jx = conv2(Ip, dx, 'same');
-Jy = conv2(Ip, dy, 'same');
+Jx = conv2(Is, dx, 'same');
+Jy = conv2(Is, dy, 'same');
 figure();
-imagesc(Jx);
-colormap(gray);
+imshow(Jx./max(max(Jx)));
 figure();
-imagesc(Jy);
-colormap(gray);
+imshow(Jy./max(max(Jy)));
 
 
 %no idea why we convolve with S
-S = [1 1];
+S = [1; 1];
 Jx = conv2(Jx, S, 'same');
 Jy = conv2(Jy, S', 'same');
 
@@ -69,7 +67,7 @@ for i = 2: size(J_dir, 1)-1;
     end
 end
 
-figure(); imagesc(E); colormap(gray);
+figure(); imshow(E); colormap(gray);
 
 % hysteresis: connecting the edges
 thres_high = 0.2;

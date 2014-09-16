@@ -14,11 +14,9 @@ I = imread('test1.jpg');
 %I = rgb2gray(I);
 
 figure();
-imagesc(I);
-colormap('gray');
+imshow(I);
 
 E = cannyEdge(I);
 
 figure();
-imagesc(E);
-colormap('gray');
+imshow(E);
