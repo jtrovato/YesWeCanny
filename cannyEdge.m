@@ -1,5 +1,17 @@
+% cannyEdge.m
+% Joseph J Trovato, Justin K Yim
+% September 2014
+% 
+% CIS 581: Computer Vision & Computational Photography
+% Project 1: Edge Detection
+
 % Function to compute Canny Edges
 function E = cannyEdge(I)
+
+% Handle color images
+if size(I,3) > 1
+    I = rgb2gray(I);
+end
 
 % pad the image
 nr = size(I,1);
@@ -17,13 +29,16 @@ dx = [1 -1];
 dy = dx';
 Jx = conv2(Is, dx, 'same');
 Jy = conv2(Is, dy, 'same');
+
+%{
+% X and Y gradient display (debugging)
 figure();
 imshow(Jx./max(max(Jx)));
 figure();
 imshow(Jy./max(max(Jy)));
+%}
 
-
-%no idea why we convolve with S
+% Smoothing opposite direction of gradient
 S = [1; 1];
 Jx = conv2(Jx, S, 'same');
 Jy = conv2(Jy, S', 'same');
@@ -31,13 +46,12 @@ Jy = conv2(Jy, S', 'same');
 J_mag = sqrt(Jx.^2 + Jy.^2);
 J_mag_norm = (J_mag-min(min(J_mag)))/(max(max(J_mag))-min(min(J_mag))); %normalize the magnitudes so thresholding is easier
 J_dir = atan2d(-Jy, Jx);
-E_dir = atan2d(-Jx, -Jy);
 
+%{
+% Total gradient display (debugging)
 figure();
 imagesc(J_mag); colormap('gray'); axis equal
 hold on
-
-%{a
 quiver(Jx, Jy);
 hold off
 %}
@@ -69,30 +83,25 @@ for ii = 2: size(J_dir, 1)-1;
                 error('thats an invalid angle');
             end
             J_mag_supp(ii,jj) = J_mag_norm(ii,jj)*(mag > sam1 && mag > sam2);
-            if (jj > 210) && (jj < 220) && (ii > 102) && (ii < 110)
-                disp([jj,ii,mag,sam1,sam2])
-                1;
-            end
     end
 end
 
-figure(); imshow(J_mag_supp); colormap(gray);
+% Hysteresis: connecting the edges
 
-% hysteresis: connecting the edges
-thres_high = 0.04;
-thres_low = 0.002;
+% Thresholds
+pixel_list = reshape(J_mag_supp,1,numel(J_mag_supp));
+thres_high = mean(pixel_list) + 1.2*std(pixel_list);%0.08;
+thres_low = mean(pixel_list) + 0.5*std(pixel_list);
+
+%disp(['mean: ',num2str(mean(pixel_list)),' std: ',num2str(std(pixel_list))]);
 
 J_mag_sized = J_mag_supp(3:(end-2),3:(end-2));
 E = J_mag_sized > thres_high;
-
-%figure(100)
-%ys = [];
 
 for ii = 1:numel(E)
     low = J_mag_sized > thres_low;
     hyst = conv2(single(E),ones(3,3),'same');
     new = (low & hyst) & ~E;
-    %ys = [ys, sum(sum(new))];
     if all(all(~new))
         break
     end
@@ -100,26 +109,12 @@ for ii = 1:numel(E)
 
 end
 
-
-%plot(1:(ii-1),ys);
 %{
-for ii=1:size(J_mag_supp, 1);
-    for jj =1:size(J_mag_supp,2);
-        if J_mag_supp(ii,jj) > thres_high
-            J_mag_supp(ii,jj) = 1;
-        elseif J_mag_supp(ii,jj) > thres_low
-            if any(J_mag_supp(ii-1:ii+1,jj-1:jj+1))
-                J_mag_supp(ii,jj) = 1;
-            else
-                J_mag_supp(ii,jj) = 0;
-            end
-        else
-            J_mag_supp(ii,jj) = 0;
-        end
-    end
-end
+% Gradient histograms for auto threshold set (debugging)
+figure
+hist(reshape(J_mag_sized,1,numel(J_mag_sized)),100)
+std(reshape(J_mag_sized,1,numel(J_mag_sized)))
 %}
-         
 
 
 end
